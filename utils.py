@@ -1,17 +1,17 @@
 import sqlite3
 
 
-def connect(query):
+def execute(query, args=None):
     connection = sqlite3.connect('animal.db')
     cursor = connection.cursor()
-    cursor.execute(query)
+    cursor.execute(query, args)
     result = cursor.fetchall()
     connection.close()
     return result
 
 
-def get_cat(id):
-    query = f"""
+def get_cat(idx):
+    query = """
             SELECT DISTINCT animals_new.name,
                 animals_new.date_of_birth,
                 Colors1.color,
@@ -27,16 +27,16 @@ def get_cat(id):
                 LEFT JOIN Colors Colors1 ON animals_new.main_color_id = Colors1.color_id
                 LEFT JOIN Colors Colors2 ON animals_new.second_color_id = Colors2.color_id
                 LEFT JOIN Breeds B on animals_new.breed_id = B.breed_id
-            WHERE id = {id}
+            WHERE id = :id
             """
-    data = connect(query)
+    data = execute(query, {'id': idx})[0]
     cat = {
-        'name': data[0][0],
-        'date_of_birth': data[0][1],
-        'main_color': data[0][2],
-        'second_color': data[0][3],
-        'program': data[0][4],
-        'status': data[0][5],
-        'breed': data[0][6]
+        'name': data[0],
+        'date_of_birth': data[1],
+        'main_color': data[2],
+        'second_color': data[3],
+        'program': data[4],
+        'status': data[5],
+        'breed': data[6]
     }
     return cat
